@@ -1,11 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 #include <map>
 #include <string>
-#include <iterator>
 #include <vector>
 #include <algorithm>
+#include <set>
 
 using namespace std;
 
@@ -15,14 +16,14 @@ int main(){
     ifstream in("text.txt");
     ofstream out("output.txt");
 
-    map<string, int> occurences;
-    map<string, vector<int>> crossRef;
     vector<string> urls;
+    map<string, pair<set<int>, int>> words;
+
+    // ----- Reading and assigning -----
 
     if(in.is_open()){
         int n = 0;
         while (!in.eof()){
-            crossRef.clear();
             n++;
 
             getline(in, line);
@@ -36,7 +37,7 @@ int main(){
                 transform(word.begin(), word.end(), word.begin(), ::tolower);
 
 
-                if(word.find("https://") != string::npos || word.find("http://") != string::npos || word.find("www.") != string::npos){
+                if(word.find("https://") != string::npos || word.find("http://") != string::npos || word.find("www.") != string::npos || word.find(".lt") != string::npos || word.find(".com") != string::npos){
                     if (word[word.length() - 1] == ',' || word[word.length() - 1] == '.')
                         word.resize(word.length() - 1);
                     urls.push_back(word);
@@ -49,42 +50,40 @@ int main(){
                         i = word.length();
                     }
                 }
-
-                // Jei nerandam tokio žodžio priskiriam key 1, else jei randam padidinam vienu
-                if(occurences.find(word) == occurences.end()){
-                    occurences[word] = 1;
+                if(!word.empty()){
+                    words[word].first.insert(n);// Eilutės numeris
+                    words[word].second++; // Pasikartojimų skaičius
                 }
-                else{ 
-                    occurences[word]++;
-                }
-                crossRef.insert({word, {0}});
-                crossRef[word].push_back(num);
             }
-
-            out << n << "-os eilutes zodziu numeriai: " << std::endl;
-            for (auto cross : crossRef)
-            {
-                if (cross.second.size() > 1)
-                    out << cross.first << " ";
-                
-                for (int i = 1; i < cross.second.size(); i++)
-                    out << cross.second.at(i) << " ";
-
-                out << std::endl;
-            }
-            out << std::endl;
-
         }
     } else cout << "Failas nerastas, patikrinkite ar tikrai egzistuoja text.txt failas.";
 
-    out << "Žodžiai ir kiek kartų pasikartoja: " << endl;
-    for (auto occ : occurences)
-        out << occ.first << ": " << occ.second << endl;
-    out << endl;
+    // ----- Output -----
 
     out << "Surasti URL: " << std::endl;
         for (auto &elem : urls)
             out << elem << std::endl;
+    out << endl;
+
+                
+    out << std::left << std::setw(18) << "Žodis" << std::setw(14)
+         << "Pasikartoja" << std::setw(15) << "Šiose eilutėse" << "\n";
+    out << "---------------------------------------------------------------------------------------";
+    for (const auto& word : words)
+        if (word.second.second >= 2) {
+            out << "\n" << std::setw(18) << word.first // Žodis
+                 << std::setw(14) << word.second.second; // Kiek kartų pasikartoja
+            unsigned int i = 0;
+            for (auto whichLine : word.second.first) {// Kurioje eilutėje
+                if (i > 12) {
+                    i = 0;
+                    out << std::endl << std::left << std::setw(32) << " ";
+                } else {
+                    i++;
+                }
+                out << std::left << std::setw(4) << whichLine; // eilutė
+            }
+        }
 
     in.close();
     out.close();
