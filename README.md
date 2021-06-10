@@ -1,4 +1,5 @@
 # Ovidijus Vaštakas, String-and-Associative-containers
+Programa ištiria tekstą naudodama string ir asociatyvius konteinerius
 
 
 ## Funkcijos
@@ -20,3 +21,6 @@
   
 * Naudojimas
   * Paleidus failą nieko daryti nereikia, programa automatiškai nuskaito "text.txt" faile ęsantį failą ir išveda rezultatus į "output.txt" failą
+
+## Versijos
+[v1.0](https://github.com/OvidijusV/String-and-Associative-containers) Pagrindinis funkcionalumas
