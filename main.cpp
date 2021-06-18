@@ -17,6 +17,7 @@ int main(){
     ofstream out("output.txt");
 
     vector<string> urls;
+    vector<string> papildoma;
     map<string, pair<set<int>, int>> words;
 
     // ----- Reading and assigning -----
@@ -36,6 +37,12 @@ int main(){
                 num++;
                 transform(word.begin(), word.end(), word.begin(), ::tolower);
 
+                if(word.find("https://") != string::npos || word.find("http://") != string::npos || word.find("www.") != string::npos || word.find(".lt") != string::npos || word.find(".com") != string::npos || word.find("copy") != string::npos){
+                    if (word[word.length() - 1] == ',' || word[word.length() - 1] == '.')
+                        word.resize(word.length() - 1);
+                    papildoma.push_back(word);
+                }
+
 
                 if(word.find("https://") != string::npos || word.find("http://") != string::npos || word.find("www.") != string::npos || word.find(".lt") != string::npos || word.find(".com") != string::npos){
                     if (word[word.length() - 1] == ',' || word[word.length() - 1] == '.')
@@ -43,6 +50,10 @@ int main(){
                     urls.push_back(word);
                     word.clear();
                 }
+
+
+                word.erase(remove(word.begin(), word.end(), '\"'), word.end());
+
 
                 for (int i = word.length() - 1; i > 0; i--){
                     if (isdigit(word[i]) || ispunct(word[i])){
@@ -63,6 +74,11 @@ int main(){
     out << "Surasti URL: " << std::endl;
         for (auto &elem : urls)
             out << elem << std::endl;
+    out << endl;
+
+    out << "Papildoma užduotis: " << std::endl;
+        for (auto &pap : papildoma)
+            out << pap << std::endl;
     out << endl;
 
                 
